@@ -10,7 +10,7 @@ pipeline {
     stages{
         stage('Build Deploy') {
             steps{
-                sshagent (credentials: ['Antino_Sagar]) {
+                sshagent (credentials: ['sagar']) {
                     sh "ssh -o StrictHostKeyChecking=no ${SSHUSERNAME}@${IP} 'cd ${SCRIPTPATH} && bash -x deploy.sh 2>&1'"
                 }
             }
