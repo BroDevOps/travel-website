@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    envirornment {
+    environment {
         SSHUSERNAME = "ubuntu"
         SCRIPTPATH = "/home/ubuntu/travel-website"
         IP = "100.27.24.34"
