@@ -1,18 +1,25 @@
 pipeline {
     agent any
 
+ 
+
     environment {
         SSHUSERNAME = "ubuntu"
         SCRIPTPATH = "/home/ubuntu/travel-website"
-        IP = "100.27.24.34"
-        PRIVATE_KEY = "~/Downloads/awspersonal.pem"
+        IP = "54.204.76.33"
     }
 
-    stages {
+ 
+
+    stages{
         stage('Build Deploy') {
-            steps {
-                sh "ssh -o StrictHostKeyChecking=no -i ${PRIVATE_KEY} ${SSHUSERNAME}@${IP} 'cd ${SCRIPTPATH} && bash -x deploy.sh 2>&1'"
+            steps{
+              sshagent (credentials: ['sagar_test']) {
+                sh "ssh -o StrictHostKeyChecking=no ${SSHUSERNAME}@${IP} 'cd ${SCRIPTPATH} && bash -x deploy.sh 2>&1'"
+
+              }
             }
         }
     }
+
 }
