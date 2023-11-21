@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:16
+FROM node:latest
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Update the machine
-RUN apt install
+RUN apt update
 
 # Install the dependencies
 RUN npm -y install
