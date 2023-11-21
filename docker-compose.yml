@@ -1,0 +1,11 @@
+version: "3.4"
+services:
+  travel-website:
+    image: travel-website-image-fe
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: travel-website
+    ports:
+      - "3000:3000"
