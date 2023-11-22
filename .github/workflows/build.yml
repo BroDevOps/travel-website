@@ -2,9 +2,9 @@ name: SonarCloud analysis
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "seconed" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "seconed" ]
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
