@@ -19,7 +19,8 @@ jobs:
           sudo apt-get remove -y containerd.io  # Remove conflicting package
           sudo apt-get -y install docker.io
           sudo usermod -aG docker $USER  # Add the GitHub Actions runner to the docker group
-          sudo docker --version
+          sudo chmod 666 /var/run/docker.sock  # Allow all users to access the Docker daemon socket
+          docker --version
 
       - name: Configure AWS credentials
         run: |
