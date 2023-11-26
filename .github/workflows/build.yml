@@ -16,6 +16,7 @@ jobs:
       - name: Set up Docker
         run: |
           sudo apt-get update
+          sudo apt-get remove -y containerd.io  # Remove conflicting package
           sudo apt-get -y install docker.io
           sudo docker --version
 
