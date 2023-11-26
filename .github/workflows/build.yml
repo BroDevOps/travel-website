@@ -20,13 +20,17 @@ jobs:
           sudo apt-get -y install docker.io
           sudo docker --version
 
+      - name: Configure AWS credentials
+        run: |
+          mkdir -p ~/.aws
+          echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
+
       - name: Build Docker image
         run: |
           docker build -t 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest .
 
       - name: Push Docker image to ECR
         run: |
-          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com
           docker push 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
 
   deploy:
@@ -37,6 +41,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        run: |
+          mkdir -p ~/.aws
+          echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
 
       - name: Download Docker image
         run: |
