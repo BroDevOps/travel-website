@@ -52,8 +52,16 @@ jobs:
           mkdir -p ~/.aws
           echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
 
-      - name: SSH into EC2 and deploy
-        run: |
-          echo "${{ secrets.PEM_FILE }}" > aws-mumbai.pem
-          chmod 600 aws-mumbai.pem
-          ssh -o StrictHostKeyChecking=no -i aws-mumbai.pem ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com && docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest && docker stop travel-container-fe && docker rm travel-container-fe && docker run -d -p 3000:3000 --restart always 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
+      - name: SSH Deploy to AWS Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PEM_FILE }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          script: |
+            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com
+            docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
+            docker stop travel-container-fe || true
+            docker rm travel-container-fe || true
+            docker run -d -p 3000:3000 --restart always 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
