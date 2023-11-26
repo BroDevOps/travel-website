@@ -25,6 +25,10 @@ jobs:
           mkdir -p ~/.aws
           echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
 
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com
+
       - name: Build Docker image
         run: |
           docker build -t 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest .
@@ -42,16 +46,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials on EC2
         run: |
-          mkdir -p ~/.aws
-          echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "sudo apt-get update && sudo apt-get install -y awscli"
 
-      - name: Download Docker image
+      - name: Login to Amazon ECR on EC2
         run: |
-          docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com"
 
-      - name: Stop and remove existing container
+      - name: Download Docker image on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
+
+      - name: Stop and remove existing container on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker stop travel-container-fe && docker rm travel-container-fe"
 
