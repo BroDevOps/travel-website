@@ -46,9 +46,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Configure AWS credentials on EC2
+      - name: Configure AWS credentials
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "sudo apt-get update && sudo apt-get install -y awscli"
+          mkdir -p ~/.aws
+          echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
 
       - name: Login to Amazon ECR on EC2
         run: |
