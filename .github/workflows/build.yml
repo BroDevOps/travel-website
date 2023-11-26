@@ -16,11 +16,10 @@ jobs:
       - name: Set up Docker
         run: |
           sudo apt-get update
-          sudo apt-get remove -y containerd.io  # Remove conflicting package
+          sudo apt-get remove -y containerd.io
           sudo apt-get -y install docker.io
-          sudo usermod -aG docker $USER  # Add the GitHub Actions runner to the docker group
-          sudo chmod 666 /var/run/docker.sock  # Allow all users to access the Docker daemon socket
-          docker --version
+          sudo usermod -aG docker $USER
+          sudo docker --version
 
       - name: Configure AWS credentials
         run: |
@@ -53,20 +52,8 @@ jobs:
           mkdir -p ~/.aws
           echo -e "[default]\naws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}\naws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}\nregion=${{ secrets.AWS_REGION }}" > ~/.aws/config
 
-      - name: Login to Amazon ECR on EC2
+      - name: SSH into EC2 and deploy
         run: |
           echo "${{ secrets.PEM_FILE }}" > aws-mumbai.pem
           chmod 600 aws-mumbai.pem
-          ssh -o StrictHostKeyChecking=no -i aws-mumbai.pem ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com"
-
-      - name: Download Docker image on EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i aws-mumbai.pem ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
-
-      - name: Stop and remove existing container on EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i aws-mumbai.pem ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker stop travel-container-fe && docker rm travel-container-fe"
-
-      - name: Deploy to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i aws-mumbai.pem ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker run -d -p 3000:3000 --restart always 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
+          ssh -o StrictHostKeyChecking=no -i aws-mumbai.pem ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com && docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest && docker stop travel-container-fe && docker rm travel-container-fe && docker run -d -p 3000:3000 --restart always 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
