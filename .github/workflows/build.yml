@@ -6,15 +6,18 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Docker
-        uses: docker/setup-docker@v3
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install docker.io
+          sudo docker --version
 
       - name: Build Docker image
         run: |
@@ -28,7 +31,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    needs: build-and-push
+    needs: build-and-deploy
 
     steps:
       - name: Checkout repository
@@ -40,7 +43,7 @@ jobs:
 
       - name: Stop and remove existing container
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@your-ec2-instance-ip "docker stop travel-container-fe && docker rm travel-container-fe"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker stop travel-container-fe && docker rm travel-container-fe"
 
       - name: Deploy to EC2
         run: |
