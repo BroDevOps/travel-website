@@ -66,8 +66,4 @@ jobs:
             docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
             docker stop travel-container-fe || true
             docker rm travel-container-fe || true
-            if [ ! "$(docker ps -q -f name=travel-container-fe)" ]; then
-              docker run -d -p 3000:3000 --restart always --name travel-container-fe 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
-            else
-              docker start travel-container-fe
-            fi
+            docker run -d -p 3000:3000 --restart always --name travel-container-fe 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
