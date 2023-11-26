@@ -63,7 +63,19 @@ jobs:
           script: |
             sudo chmod 666 /var/run/docker.sock
             aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com
-            docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
+
+            echo "Checking existing containers:"
+            docker ps -a
+
+            echo "Checking Docker images:"
+            docker images
+
+            echo "Checking Docker system information:"
+            docker info
+
+            echo "Checking Docker network:"
+            docker network ls
+
             docker stop travel-container-fe || true  # Stop and ignore errors if the container doesn't exist
             docker rm travel-container-fe || true    # Remove and ignore errors if the container doesn't exist
             docker run -d -p 3000:3000 --restart always --name travel-container-fe 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest
