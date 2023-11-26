@@ -53,16 +53,16 @@ jobs:
 
       - name: Login to Amazon ECR on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i $GITHUB_WORKSPACE/${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 402639326195.dkr.ecr.ap-south-1.amazonaws.com"
 
       - name: Download Docker image on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i $GITHUB_WORKSPACE/${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker pull 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
 
       - name: Stop and remove existing container on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i $GITHUB_WORKSPACE/${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker stop travel-container-fe && docker rm travel-container-fe"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker stop travel-container-fe && docker rm travel-container-fe"
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i $GITHUB_WORKSPACE/${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker run -d -p 3000:3000 --restart always 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.PEM_FILE }} ubuntu@ec2-3-6-38-239.ap-south-1.compute.amazonaws.com "docker run -d -p 3000:3000 --restart always 402639326195.dkr.ecr.ap-south-1.amazonaws.com/test:latest"
