@@ -13,7 +13,7 @@ pipeline {
             steps {
                 script {
                     // Start SSH Agent
-                    sshagent (credentials: ['ubuntu']) {
+                    sshagent (credentials: ['sagar']) {
                         // Forward SSH Agent to Bastion
                         sh "ssh -A ${SSHUSERNAME}@${BASTION_IP} 'ssh-add -L'"
 
