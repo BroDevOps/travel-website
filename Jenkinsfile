@@ -20,6 +20,7 @@
 //         }
 //     }
 // }
+
 pipeline {
     agent any
 
@@ -34,34 +35,17 @@ pipeline {
         stage('Build Deploy') {
             steps {
                 script {
-                    // Print debugging information
-                    echo "Running on ${PRIVATE_IP} as ${SSHUSERNAME}"
-
-                    // Verify SSH connectivity
-                    sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ubuntu@${PRIVATE_IP} 'echo SSH Successful'"
-
-                    // Verify Docker is running on the remote server
-                    sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ubuntu@${PRIVATE_IP} 'docker ps'"
-
-                    // Add Jenkins user to the docker group
-                    sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ubuntu@${PRIVATE_IP} 'sudo usermod -aG docker jenkins'"
-
-                    // Retry the Docker command
-                    retry(3) {
-                        sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ubuntu@${PRIVATE_IP} 'cd ${SCRIPTPATH} && docker-compose up -d --build'"
+                    // Start SSH Agent
+                    sshagent (credentials: ['ubuntu']) {
+                        // Forward SSH Agent to Bastion
+                        sh "ssh -A ${SSHUSERNAME}@${BASTION_IP} 'ssh-add -L'"
+                        
+                        // Connect to Private Server via Bastion
+                        sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ${SSHUSERNAME}@${PRIVATE_IP} 'cd ${SCRIPTPATH} && bash -x deploy.sh 2>&1'"
                     }
                 }
             }
         }
     }
-
-    post {
-        always {
-            script {
-                // Additional steps or cleanup, if needed
-                echo "Adding Jenkins user to the docker group..."
-                sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ubuntu@${PRIVATE_IP} 'sudo usermod -aG docker jenkins'"
-            }
-        }
-    }
 }
+
