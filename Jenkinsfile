@@ -4,7 +4,7 @@
 //     environment {
 //         SSHUSERNAME = "ubuntu"
 //         SCRIPTPATH = "/home/ubuntu/travel-website"
-//         BASTION_IP = "43.205.209.153"
+//         BASTION_IP = "65.2.84.242"
 //         PRIVATE_IP = "10.10.10.151"
 //     }
 
@@ -32,7 +32,7 @@ pipeline {
     environment {
         SSHUSERNAME = "ubuntu"
         SCRIPTPATH = "/home/ubuntu/travel-website"
-        BASTION_IP = "43.205.209.153"
+        BASTION_IP = "65.2.84.242"
         PRIVATE_IP = "10.10.10.151"
     }
 
