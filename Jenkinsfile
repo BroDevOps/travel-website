@@ -46,18 +46,7 @@ pipeline {
                         sh "ssh -A -o StrictHostKeyChecking=yes ${SSHUSERNAME}@${BASTION_IP} 'ssh-add -L'"
 
                         // Connect to Private Server via Bastion
-                        def result = sh script: "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ${SSHUSERNAME}@${PRIVATE_IP} 'cd ${SCRIPTPATH} && bash -x deploy.sh 2>&1'", returnStatus: true
-
-                        // Email Notification
-                        if (result == 0) {
-                            emailext subject: "Success - Deployment Status for Job '${env.JOB_NAME}'",
-                                      body: """<p>Deployment was successful. Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME}</a></p>""",
-                                      to: 'sagaraulakh80@gmail.com'
-                        } else {
-                            emailext subject: "Failure - Deployment Status for Job '${env.JOB_NAME}'",
-                                      body: """<p>Deployment failed. Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME}</a></p>""",
-                                      to: 'sagaraulakh80@gmail.com'
-                        }
+                        sh "ssh -o StrictHostKeyChecking=no -J ${SSHUSERNAME}@${BASTION_IP} ${SSHUSERNAME}@${PRIVATE_IP} 'cd ${SCRIPTPATH} && bash -x deploy.sh 2>&1'"
                     }
                 }
             }
@@ -68,8 +57,21 @@ pipeline {
         always {
             // Clean up steps if needed
         }
+
+        success {
+            emailext subject: "Success - Deployment Status for Job '${env.JOB_NAME}'",
+                      body: """<p>Deployment was successful. Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME}</a></p>""",
+                      to: 'sagaraulakh80@gmail.com'
+        }
+
+        failure {
+            emailext subject: "Failure - Deployment Status for Job '${env.JOB_NAME}'",
+                      body: """<p>Deployment failed. Check console output at <a href='${env.BUILD_URL}'>${env.JOB_NAME}</a></p>""",
+                      to: 'sagaraulakh80@gmail.com'
+        }
     }
 }
+
 
 
 
