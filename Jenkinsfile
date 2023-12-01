@@ -57,14 +57,16 @@ pipeline {
     post {
         always {
             // Send email notification for both success and failure
-            emailext (
-                subject: "Deployment Status for Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """<p>Deployment Status for Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-                    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>
-                    <p>Result: ${result == 0 ? 'SUCCESS' : 'FAILURE'}</p>""",
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                to: RECIPIENT_EMAIL
-            )
+            script {
+                emailext (
+                    subject: "Deployment Status for Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                    body: """<p>Deployment Status for Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+                        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>
+                        <p>Result: ${currentBuild.result == 'SUCCESS' ? 'SUCCESS' : 'FAILURE'}</p>""",
+                    recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                    to: RECIPIENT_EMAIL
+                )
+            }
         }
 
         failure {
@@ -73,6 +75,7 @@ pipeline {
         }
     }
 }
+
 
 
 
