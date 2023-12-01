@@ -65,14 +65,15 @@ pipeline {
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
                 to: RECIPIENT_EMAIL
             )
-            
+        }
+
+        failure {
             // Fail the build if the deployment script fails
-            if (result != 0) {
-                error "Deployment failed"
-            }
+            error "Deployment failed"
         }
     }
 }
+
 
 
 
