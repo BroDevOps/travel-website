@@ -9,3 +9,23 @@ services:
     container_name: travel-website
     ports:
       - "3000:3000"
+
+
+# version: "3.5"
+# services:
+#   vibe-website:
+#     image: vibe-website-image-fe
+#     restart: always
+#     build:
+#       context: .
+#       dockerfile: ./Dockerfile
+#     container_name: vibe-website
+#     ports:
+#       - "4000:4000"
+#     logging:
+#       driver: "awslogs"
+#       options:
+#         awslogs-region: "ap-south-1"
+#         awslogs-group: "vibe"
+#         awslogs-stream: "vibe-stream"
+#         awslogs-datetime-format: '\[%b %d, %Y %H:%M:%S\]'
